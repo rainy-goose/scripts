@@ -16,10 +16,26 @@ echo ""
 #checks for wifi adapter
 if (Get-netadapter | where name -eq "Wi-Fi") {
 echo "Wi-Fi Adapter located."
+echo "Firewall located."
+
 # breakout- either enables or disabled based off of current status (toggle)
 
+#disables
+if (get-netadapter | where status -eq "up" | where name -eq "Wi-Fi") {
+echo "Disabling Wi-Fi Adapter..."
+disable-netadapter -Name "Wi-Fi" -Confirm:$false
+echo "Wi-Fi Adapter Disabled."
+echo "Disabling Firewall..."
+set-netfirewallprofile -profile domain, public, private -enabled false
+echo "Firewall Disabled."
+echo ""
+echo "Device prepared for CNIT-133 Hardware Connctions"
+}
+
+# script runs both, need to add check variable
+else {
 #enables
-if (get-netadapter | where status -eq "disabled"){
+if (get-netadapter | where status -eq "disabled" | where name -eq "Wi-Fi"){
 echo "Enabling Firewall..."
 set-netfirewallprofile -profile domain, public, private -enabled true
 echo "Firewall Enabled."
@@ -29,16 +45,6 @@ echo "Wi-Fi Adapter Enabled."
 echo ""
 echo "Device prepared for normal usage."
 }
-#disables
-if (get-netadapter | where status -eq "up") {
-echo "Disabling Wi-Fi Adapter..."
-disable-netadapter -Name "Wi-Fi" -Confirm:$false
-echo "Wi-Fi Adapter Disabled."
-echo "Disabling Firewall..."
-set-netfirewallprofile -profile domain, public, private -enabled false
-echo "Firewall Disabled."
-echo ""
-echo "Device prepared for CNIT-133 Hardware Connctions"
 }
 }
 
